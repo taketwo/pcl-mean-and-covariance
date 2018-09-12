@@ -6,18 +6,16 @@ Experiments with mean and covariance computation in PCL.
 
 1. **Clone this repository** 
 
-   Clone with submodules and pass the `--recursive-submodules` flag:
+   Clone with submodules and pass the `--recursive` flag:
 
        $ git clone https://github.com/taketwo/pcl-mean-and-covariance.git --recursive-submodules
 
 2. **Configure with CMake**
     
-       $ cd <path to>/pcl-mean-and-covariance/
-       $ mkdir build
-       $ cd build/
-       $ cmake ..
+       $ cd <path to>/pcl-mean-and-covariance
+       $ cmake -C CMakeLists.txt -G "Unix Makefiles"
 
-   Note: CMake 3.5 or higher is required. 
+   Note: CMake 3.5 or higher is required. Also note that the generator specified after the `-G` can be something other than Unix Makefiles, E.g. Ninja. 
 
 3. **Install `datamash`** 
 
@@ -29,14 +27,12 @@ Experiments with mean and covariance computation in PCL.
 
 4. **Build and run benchmarks** 
 
-   From the `build` folder, run:
-
+       $ cd ~/bench
        $ make benchmarks
 
 5. **Build and run tests** 
 
-   From the `build` folder, run:
-
+       $ cd ~/tests
        $ make tests
 
 ## Troubleshooting
