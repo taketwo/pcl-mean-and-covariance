@@ -6,7 +6,7 @@ Experiments with mean and covariance computation in PCL.
 
 1. **Clone this repository** 
 
-   Clone with submodules and pass the `--recursive` flag:
+   Clone with submodules and pass the `--recursive-submodules` flag:
 
        $ git clone https://github.com/taketwo/pcl-mean-and-covariance.git --recursive-submodules
 
