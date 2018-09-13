@@ -12,10 +12,12 @@ Experiments with mean and covariance computation in PCL.
 
 2. **Configure with CMake**
     
-       $ cd <path to>/pcl-mean-and-covariance
-       $ cmake -C CMakeLists.txt -G "Unix Makefiles"
+       $ cd <path to>/pcl-mean-and-covariance/
+       $ mkdir build
+       $ cd build/
+       $ cmake ..
 
-   Note: CMake 3.5 or higher is required. Also note that the generator specified after the `-G` can be something other than Unix Makefiles, E.g. Ninja. 
+   Note: CMake 3.5 or higher is required. 
 
 3. **Install `datamash`** 
 
@@ -27,12 +29,14 @@ Experiments with mean and covariance computation in PCL.
 
 4. **Build and run benchmarks** 
 
-       $ cd ~/bench
+   From the `build` folder, run:
+
        $ make benchmarks
 
 5. **Build and run tests** 
 
-       $ cd ~/tests
+   From the `build` folder, run:
+
        $ make tests
 
 ## Troubleshooting
