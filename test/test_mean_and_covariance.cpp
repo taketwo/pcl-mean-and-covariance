@@ -1,4 +1,6 @@
 #include <gtest/gtest.h>
+#include <pcl/point_types.h>              // PointXYZ, PointXYZRGB etc
+#include <pcl/point_cloud.h>
 #include <mean_and_covariance.hpp>
 
 TEST(TestCaseName, TestCase)
