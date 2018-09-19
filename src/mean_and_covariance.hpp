@@ -77,6 +77,53 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
 }
 
 
+
+template <typename PointT, typename Scalar> inline unsigned int
+computeMeanAndCovarianceMatrixDoublePass (const pcl::PointCloud<PointT> &cloud,
+                                          Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
+                                          Eigen::Matrix<Scalar, 4, 1> &centroid)
+{
+  // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
+  Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor>::Zero ();
+  size_t point_count;
+  point_count = cloud.size ();
+  Eigen::Vector3f approx_centroid = cloud[indices[0]].getVector3fMap();
+
+  // For each point in the cloud
+  for (size_t i = 0; i < point_count; ++i)
+  {
+    accu [6] += cloud[i].x;
+    accu [7] += cloud[i].y;
+    accu [8] += cloud[i].z;
+  }
+
+  accu = accu / static_cast<float>(point_count);
+
+  for (size_t i = 0; i < point_count; ++i)
+  {
+    accu [0] += (cloud[i].x - accu[6]) * (cloud[i].x - accu[6]);
+    accu [1] += (cloud[i].x - accu[6]) * (cloud[i].y - accu[7]);
+    accu [2] += (cloud[i].x - accu[6]) * (cloud[i].z - accu[8]);
+    accu [3] += (cloud[i].y - accu[7]) * (cloud[i].y - accu[7]);
+    accu [4] += (cloud[i].y - accu[7]) * (cloud[i].z - accu[8]);
+    accu [5] += (cloud[i].z - accu[8]) * (cloud[i].z - accu[8]);
+  }
+
+  centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
+  centroid[3] = 0;
+  covariance_matrix.coeffRef (0) = accu [0] / static_cast<float>(point_count);
+  covariance_matrix.coeffRef (1) = accu [1] / static_cast<float>(point_count);
+  covariance_matrix.coeffRef (2) = accu [2] / static_cast<float>(point_count);
+  covariance_matrix.coeffRef (4) = accu [3] / static_cast<float>(point_count);
+  covariance_matrix.coeffRef (5) = accu [4] / static_cast<float>(point_count);
+  covariance_matrix.coeffRef (8) = accu [5] / static_cast<float>(point_count);
+  covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);
+  covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);
+  covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);
+
+  return (static_cast<unsigned int> (point_count));
+}
+
 int add_two_numbers(int a, int b)
 {
   return (a+b);
