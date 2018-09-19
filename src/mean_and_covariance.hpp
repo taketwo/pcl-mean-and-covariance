@@ -8,6 +8,25 @@ namespace pcl
 namespace experimental
 {
 
+/* Mathematics for a single pass covariance calculation from a set of XYZ points.
+ * If the covariance matrix is structured like so:
+ *
+ *    | 0 1 2 |
+ *    | 3 4 5 |
+ *    | 6 7 8 |
+ *
+ * Then:
+ *
+ *    0 = mean(X*X) - sum(X) * sum(X)
+ *    1 = mean(X*Y) - sum(X) * sum(Y)
+ *    2 = mean(X*Z) - sum(X) * sum(Z)
+ *    3 = 1 = mean(X*Y) - sum(X) * sum(Y)
+ *    4 = mean(Y*Y) - sum(Y) * sum(Y)
+ *    5 = mean(Y*Z) - sum(Y) * sum(Z)
+ *    6 = 2 = mean(X*Z) - sum(X) * sum(Z)
+ *    7 = 5 = mean(Y*Z) - sum(Y) * sum(Z)
+ *    8 = mean(Z*Z) - sum(Z) * sum(Z)
+ */
 template <typename PointT, typename Scalar> inline unsigned int
 computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
                                 const std::vector<int> &indices,
