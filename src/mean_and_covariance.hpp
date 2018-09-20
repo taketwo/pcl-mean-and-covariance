@@ -77,9 +77,13 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
 }
 
 
-
+/* This is based on the double-pass calculation suggested here:
+ *    https://github.com/PointCloudLibrary/pcl/pull/1407
+ *
+ */
 template <typename PointT, typename Scalar> inline unsigned int
 computeMeanAndCovarianceMatrixDoublePass (const pcl::PointCloud<PointT> &cloud,
+                                          const std::vector<int> &indices,
                                           Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
                                           Eigen::Matrix<Scalar, 4, 1> &centroid)
 {
@@ -90,27 +94,34 @@ computeMeanAndCovarianceMatrixDoublePass (const pcl::PointCloud<PointT> &cloud,
   Eigen::Vector3f approx_centroid = cloud[indices[0]].getVector3fMap();
 
   // For each point in the cloud
-  for (size_t i = 0; i < point_count; ++i)
+  for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
   {
-    accu [6] += cloud[i].x;
-    accu [7] += cloud[i].y;
-    accu [8] += cloud[i].z;
+    const Eigen::Vector3f point = cloud[*iIt].getVector3fMap() - approx_centroid;
+    accu [6] += point[0];
+    accu [7] += point[1];
+    accu [8] += point[2];
   }
 
   accu = accu / static_cast<float>(point_count);
 
-  for (size_t i = 0; i < point_count; ++i)
+  for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
   {
-    accu [0] += (cloud[i].x - accu[6]) * (cloud[i].x - accu[6]);
-    accu [1] += (cloud[i].x - accu[6]) * (cloud[i].y - accu[7]);
-    accu [2] += (cloud[i].x - accu[6]) * (cloud[i].z - accu[8]);
-    accu [3] += (cloud[i].y - accu[7]) * (cloud[i].y - accu[7]);
-    accu [4] += (cloud[i].y - accu[7]) * (cloud[i].z - accu[8]);
-    accu [5] += (cloud[i].z - accu[8]) * (cloud[i].z - accu[8]);
+    const Eigen::Vector3f point = cloud[*iIt].getVector3fMap() - approx_centroid;
+    accu [0] += (point[0] - accu[6]) * (point[0] - accu[6]);
+    accu [1] += (point[0] - accu[6]) * (point[1] - accu[7]);
+    accu [2] += (point[0] - accu[6]) * (point[2] - accu[8]);
+    accu [3] += (point[1] - accu[7]) * (point[1] - accu[7]);
+    accu [4] += (point[1] - accu[7]) * (point[2] - accu[8]);
+    accu [5] += (point[2] - accu[8]) * (point[2] - accu[8]);
   }
 
-  centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
-  centroid[3] = 0;
+  // Calculate the actual centroid (the 'mean' of the point cloud)
+  centroid[0] = accu[6] + approx_centroid[0];
+  centroid[1] = accu[7] + approx_centroid[1];
+  centroid[2] = accu[8] + approx_centroid[2];
+  centroid[3] = 1;
+
+  // Calculate co-variance matrix
   covariance_matrix.coeffRef (0) = accu [0] / static_cast<float>(point_count);
   covariance_matrix.coeffRef (1) = accu [1] / static_cast<float>(point_count);
   covariance_matrix.coeffRef (2) = accu [2] / static_cast<float>(point_count);
