@@ -15,7 +15,7 @@ namespace experimental
  *    | 3 4 5 |
  *    | 6 7 8 |
  *
- * Then:
+ * Where:
  *
  *    0 = mean(X*X) - sum(X) * sum(X)
  *    1 = mean(X*Y) - sum(X) * sum(Y)
@@ -77,9 +77,9 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
 }
 
 
+
 /* This is based on the double-pass calculation suggested here:
  *    https://github.com/PointCloudLibrary/pcl/pull/1407
- *
  */
 template <typename PointT, typename Scalar> inline unsigned int
 computeMeanAndCovarianceMatrixDoublePass (const pcl::PointCloud<PointT> &cloud,
@@ -133,11 +133,6 @@ computeMeanAndCovarianceMatrixDoublePass (const pcl::PointCloud<PointT> &cloud,
   covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);
 
   return (static_cast<unsigned int> (point_count));
-}
-
-int add_two_numbers(int a, int b)
-{
-  return (a+b);
 }
 
 
