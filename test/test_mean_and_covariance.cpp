@@ -30,27 +30,26 @@ TEST(MeanAndCovariance, SelfTest)
   computeMeanAndCovarianceMatrixDoublePass(c, indices, covariance_matrix_dp,
                                            centroid_dp);
 
-  // Check calculations vs expected values
-  EXPECT_TRUE(centroid_sp.isApprox(centroid_expected));
-  EXPECT_TRUE(centroid_dp.isApprox(centroid_expected));
-  EXPECT_TRUE(covariance_matrix_sp.isApprox(covariance_matrix_expected));
-  EXPECT_TRUE(covariance_matrix_dp.isApprox(covariance_matrix_expected));
+  // Check centroid
+  for (int i = 0; i < 4; i++)
+  {
+    EXPECT_EQ(centroid_expected[i], centroid_sp[i]) \
+              << "Single-pass centroid differs at index " << i;
+    EXPECT_EQ(centroid_expected[i], centroid_sp[i]) \
+              << "Double-pass centroid differs at index " << i;
+  }
 
-
-//  // In general, three options for comparing calculated with expected values
-
-//  // Method 1 (explicit)
-//  EXPECT_EQ(centroid_sp[0], 0.0); EXPECT_EQ(centroid_sp[1], 0.0);
-//  EXPECT_EQ(centroid_sp[2], 0.0); EXPECT_EQ(centroid_sp[3], 1.0);
-
-//  // Method 2 (iterate)
-//  for (int i = 0; i < 4; i++)
-//  {
-//    EXPECT_EQ(centroid_expected[i], centroid_sp[i]);
-//  }
-
-//  // Method 3 (Eigen approx)
-//  EXPECT_TRUE(centroid_sp.isApprox(centroid_expected));
+  // Check covariance-matrix
+  for (int col = 0; col < 3; col++)
+  {
+    for (int row = 0; row < 3; row++)
+    {
+      EXPECT_EQ(covariance_matrix_sp(row, col), covariance_matrix_expected(row, col)) \
+                << "Single-pass covariance matrix differs at row " << row << ", col " << col;
+      EXPECT_EQ(covariance_matrix_dp(row, col), covariance_matrix_expected(row, col)) \
+                << "Double-pass covariance matrix differs at row " << row << ", col " << col;
+    }
+  }
 }
 
 
