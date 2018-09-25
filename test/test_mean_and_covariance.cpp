@@ -27,12 +27,12 @@ TEST(MeanAndCovariance, SelfTest)
                                 0.0, 0.0, 0.0;
 
   // Input to our covariance matrix functions
-  computeMeanAndCovarianceMatrix(c, indices, covariance_matrix_sp_f, centroid_sp_f);
-  computeMeanAndCovarianceMatrix(c, indices, covariance_matrix_sp_d, centroid_sp_d);
+  computeMeanAndCovarianceMatrix(c, indices, covariance_matrix_sp_f, centroid_sp_f, 1);
+  computeMeanAndCovarianceMatrix(c, indices, covariance_matrix_sp_d, centroid_sp_d, 1);
   computeMeanAndCovarianceMatrixDoublePass(c, indices, covariance_matrix_dp_f,
-                                           centroid_dp_f);
+                                           centroid_dp_f, 1);
   computeMeanAndCovarianceMatrixDoublePass(c, indices, covariance_matrix_dp_d,
-                                           centroid_dp_d);
+                                           centroid_dp_d, 1);
 
   // Check all centroids
   for (int i = 0; i < 4; i++)

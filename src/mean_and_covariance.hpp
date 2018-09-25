@@ -31,13 +31,15 @@ template <typename PointT, typename Scalar> inline unsigned int
 computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
                                 const std::vector<int> &indices,
                                 Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
-                                Eigen::Matrix<Scalar, 4, 1> &centroid)
+                                Eigen::Matrix<Scalar, 4, 1> &centroid,
+                                bool demean)
 {
   // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
   Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor>::Zero ();
   size_t point_count;
   point_count = indices.size ();
-  Eigen::Vector3f approx_centroid = cloud[indices[0]].getVector3fMap();
+  Eigen::Vector3f approx_centroid = Eigen::Vector3f::Zero();
+  if (demean) approx_centroid = cloud[indices[0]].getVector3fMap();
 
   // Accumulate a sum of the values we need (e.g. X*X) in 'accu'
   for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
@@ -85,13 +87,15 @@ template <typename PointT, typename Scalar> inline unsigned int
 computeMeanAndCovarianceMatrixDoublePass (const pcl::PointCloud<PointT> &cloud,
                                           const std::vector<int> &indices,
                                           Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
-                                          Eigen::Matrix<Scalar, 4, 1> &centroid)
+                                          Eigen::Matrix<Scalar, 4, 1> &centroid,
+                                          bool demean)
 {
   // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
   Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor>::Zero ();
   size_t point_count;
   point_count = cloud.size ();
-  Eigen::Vector3f approx_centroid = cloud[indices[0]].getVector3fMap();
+  Eigen::Vector3f approx_centroid = Eigen::Vector3f::Zero();
+  if (demean) approx_centroid = cloud[indices[0]].getVector3fMap();
 
   // For each point in the cloud
   for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
