@@ -17,37 +17,53 @@ TEST(MeanAndCovariance, SelfTest)
 
   // Create the rest of our input parameters and our expected results
   const std::vector<int> indices = {0,1,2,3};
-  Eigen::Vector4f centroid_sp, centroid_dp, centroid_expected;
-  Eigen::Matrix3f covariance_matrix_sp, covariance_matrix_dp,
-                  covariance_matrix_expected;
+  Eigen::Vector4f centroid_sp_f, centroid_dp_f, centroid_expected;
+  Eigen::Vector4d centroid_sp_d, centroid_dp_d;
+  Eigen::Matrix3f covariance_matrix_sp_f, covariance_matrix_dp_f, covariance_matrix_expected;
+  Eigen::Matrix3d covariance_matrix_sp_d, covariance_matrix_dp_d;
   centroid_expected = {0,0,0,1};
   covariance_matrix_expected << 1.0, 0.0, 0.0,
                                 0.0, 1.0, 0.0,
                                 0.0, 0.0, 0.0;
 
   // Input to our covariance matrix functions
-  computeMeanAndCovarianceMatrix(c, indices, covariance_matrix_sp, centroid_sp);
-  computeMeanAndCovarianceMatrixDoublePass(c, indices, covariance_matrix_dp,
-                                           centroid_dp);
+  computeMeanAndCovarianceMatrix(c, indices, covariance_matrix_sp_f, centroid_sp_f);
+  computeMeanAndCovarianceMatrix(c, indices, covariance_matrix_sp_d, centroid_sp_d);
+  computeMeanAndCovarianceMatrixDoublePass(c, indices, covariance_matrix_dp_f,
+                                           centroid_dp_f);
+  computeMeanAndCovarianceMatrixDoublePass(c, indices, covariance_matrix_dp_d,
+                                           centroid_dp_d);
 
-  // Check centroid
+  // Check all centroids
   for (int i = 0; i < 4; i++)
   {
-    EXPECT_EQ(centroid_expected[i], centroid_sp[i]) \
-              << "Single-pass centroid differs at index " << i;
-    EXPECT_EQ(centroid_expected[i], centroid_sp[i]) \
-              << "Double-pass centroid differs at index " << i;
+    EXPECT_EQ(centroid_expected[i], centroid_sp_f[i]) \
+              << "Single-pass, single precision centroid differs at index " << i;
+    EXPECT_EQ(centroid_expected[i], centroid_dp_f[i]) \
+              << "Double-pass, single precision centroid differs at index " << i;
+    EXPECT_EQ(centroid_expected[i], centroid_sp_d[i]) \
+              << "Single-pass, double precision centroid differs at index " << i;
+    EXPECT_EQ(centroid_expected[i], centroid_dp_d[i]) \
+              << "Double-pass, double precision centroid differs at index " << i;
   }
 
-  // Check covariance-matrix
+  // Check all covariance-matrices
   for (int col = 0; col < 3; col++)
   {
     for (int row = 0; row < 3; row++)
     {
-      EXPECT_EQ(covariance_matrix_sp(row, col), covariance_matrix_expected(row, col)) \
-                << "Single-pass covariance matrix differs at row " << row << ", col " << col;
-      EXPECT_EQ(covariance_matrix_dp(row, col), covariance_matrix_expected(row, col)) \
-                << "Double-pass covariance matrix differs at row " << row << ", col " << col;
+      EXPECT_EQ(covariance_matrix_sp_f(row, col), covariance_matrix_expected(row, col)) \
+                << "Single-pass, single precision covariance matrix differs at row "
+                << row << ", col " << col;
+      EXPECT_EQ(covariance_matrix_dp_f(row, col), covariance_matrix_expected(row, col)) \
+                << "Double-pass, single precision covariance matrix differs at row "
+                << row << ", col " << col;
+      EXPECT_EQ(covariance_matrix_sp_d(row, col), covariance_matrix_expected(row, col)) \
+                << "Single-pass, double precision covariance matrix differs at row "
+                << row << ", col " << col;
+      EXPECT_EQ(covariance_matrix_dp_d(row, col), covariance_matrix_expected(row, col)) \
+                << "Double-pass, double precision covariance matrix differs at row "
+                << row << ", col " << col;
     }
   }
 }
